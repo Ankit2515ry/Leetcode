@@ -13,7 +13,7 @@ public:
             vis[u]=0;
             res+=c;
             for(int i=0;i<points.size();i++){
-                //if(vis[i]!=-1)continue;
+                if(vis[i]!=-1)continue;
                 int d=abs(points[i][0]-points[u][0])+abs(points[i][1]-points[u][1]);
                 pq.push({d,i});
             }
