@@ -29,36 +29,56 @@
 //         return solve(nums,0,0);
 //     }
 // };
-class Solution {
-public:
-    int dp[1 << 18][10][3];
-    int numSlots;
-    int solve(vector<int>& nums,int mask,int slot,int c){
-        int n=nums.size();
-        if(mask==(1<<n)-1)return 0;
-        if(slot>numSlots)return -1e7;
-        if(dp[mask][slot][c]!=-1)return dp[mask][slot][c];
-        int res=0;
-        res=max(res,solve(nums,mask,slot+1,0));
-        if(c<2){
-            for(int i=0;i<n;i++){
-                if(!((mask>>i)&1)){
-                    res=max(res,(slot&nums[i])+solve(nums,mask|(1<<i),slot,c+1));
-                }
-            }
-        }
-        return dp[mask][slot][c]=res;
-    }
-    int maximumANDSum(vector<int>& nums, int slots) {
-        int n=nums.size();
-        numSlots=slots;
-        memset(dp, -1, sizeof(dp));
-        return solve(nums,0,1,0);
-    }
-};
 // class Solution {
 // public:
-//     int maximumANDSum(vector<int>& nums, int numSlots) {
-        
+//     int dp[1 << 18][10][3];
+//     int numSlots;
+//     int solve(vector<int>& nums,int mask,int slot,int c){
+//         int n=nums.size();
+//         if(mask==(1<<n)-1)return 0;
+//         if(slot>numSlots)return -1e7;
+//         if(dp[mask][slot][c]!=-1)return dp[mask][slot][c];
+//         int res=0;
+//         res=max(res,solve(nums,mask,slot+1,0));
+//         if(c<2){
+//             for(int i=0;i<n;i++){
+//                 if(!((mask>>i)&1)){
+//                     res=max(res,(slot&nums[i])+solve(nums,mask|(1<<i),slot,c+1));
+//                 }
+//             }
+//         }
+//         return dp[mask][slot][c]=res;
+//     }
+//     int maximumANDSum(vector<int>& nums, int slots) {
+//         int n=nums.size();
+//         numSlots=slots;
+//         memset(dp, -1, sizeof(dp));
+//         return solve(nums,0,1,0);
 //     }
 // };
+class Solution {
+public:
+    int slots;
+    int dp[1<<18];
+    int solve(vector<int>& nums,int mask){
+        int n=nums.size();
+        int idx=__builtin_popcount(mask);
+        if(idx==n)return 0;
+        if(dp[mask]!=-1)return dp[mask];
+        int res=0;
+        for(int i=0;i<2*slots;i++){
+            if(!((mask>>i)&1)){
+                int slot=(i/2)+1;
+                int sum=nums[idx]&slot;
+                res=max(res,sum+solve(nums,mask|(1<<i)));
+            }
+        }
+        return dp[mask]=res;
+    }
+    int maximumANDSum(vector<int>& nums, int numSlots) {
+        int n=nums.size();
+        slots=numSlots;
+        memset(dp,-1,sizeof(dp));
+        return solve(nums,0);
+    }
+};
